@@ -13,7 +13,9 @@ if (PROJECT_IS_TOP_LEVEL)
 endif()
 
 # We need compile-commands in all cases so that clang-tidy tests work
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+if (NOT CMAKE_EXPORT_COMPILE_COMMANDS)
+  message(FATAL_ERROR "Clang-tidy tests require compile_commands.json")
+endif()
 
 # Some package managers (conda) have separate LLVM and clang development packages.
 # Finding just LLVM or just clang does not guarantee that the other is installed, so need
@@ -25,6 +27,8 @@ separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
 llvm_map_components_to_libnames(CCCL_LLVM_LIBS core)
 
 define_property(GLOBAL PROPERTY CCCL_TIDY_PLUGINS)
+
+include("${CCCL_SOURCE_DIR}/cmake/CCCLEnsureMetaTargets.cmake")
 
 #[=======================================================================[.rst:
 cccl_create_clang_tidy_plugin
@@ -70,8 +74,9 @@ function(cccl_create_clang_tidy_plugin TARGET)
   target_compile_definitions("${TARGET}" PRIVATE ${LLVM_DEFINITIONS_LIST})
   target_link_libraries(
     "${TARGET}"
-    PRIVATE ${CCCL_LLVM_LIBS} clangTidy clangToolingRefactoring
+    PRIVATE cccl::clang-tidy ${CCCL_LLVM_LIBS} clangToolingRefactoring
   )
+  cccl_ensure_metatargets("${TARGET}")
 
   set_property(GLOBAL APPEND PROPERTY CCCL_TIDY_PLUGINS "${TARGET}")
 endfunction()
@@ -260,5 +265,4 @@ function(cccl_create_clang_tidy_test plugin source)
   _cccl_ensure_plugin_is_built_for_test("${target}" "${plugin}")
 endfunction()
 
-# The parent enables testing after configuring this directory.
-enable_testing()
+add_subdirectory(modernize_type_traits)
