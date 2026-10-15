@@ -28,8 +28,6 @@ llvm_map_components_to_libnames(CCCL_LLVM_LIBS core)
 
 define_property(GLOBAL PROPERTY CCCL_TIDY_PLUGINS)
 
-include("${CCCL_SOURCE_DIR}/cmake/CCCLEnsureMetaTargets.cmake")
-
 #[=======================================================================[.rst:
 cccl_create_clang_tidy_plugin
 -----------------------------
