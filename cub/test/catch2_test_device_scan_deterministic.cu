@@ -13,7 +13,18 @@
 #include "cub_test_macros.h"
 #include <c2h/generators.h>
 
-using float_type_list = c2h::type_list<float, double>;
+using float_type_list =
+  c2h::type_list<float,
+                 double
+#if _CCCL_HAS_NVFP16()
+                 ,
+                 __half
+#endif
+#if _CCCL_HAS_NVBF16()
+                 ,
+                 __nv_bfloat16
+#endif
+                 >;
 
 CUB_TEST("DeviceScan::ExclusiveScan with run_to_run determinism is bit-reproducible",
          "[scan][deterministic][run_to_run]",
