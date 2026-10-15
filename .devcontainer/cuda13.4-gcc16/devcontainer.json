@@ -21,6 +21,11 @@
     "-c",
     "if [ ${CODESPACES:-false} = 'true' ]; then . devcontainer-utils-post-attach-command; fi"
   ],
+  "postStartCommand": [
+    "/bin/bash",
+    "-c",
+    "\"${containerWorkspaceFolder}/.devcontainer/setup-cuda-compat.sh\""
+  ],
   "containerEnv": {
     "AWS_IDP_URL": "https://token.rapids.nvidia.com",
     "AWS_ROLE_ARN": "arn:aws:iam::279114543810:role/rapids-token-sccache-devs",
@@ -42,7 +47,8 @@
     "CCCL_HOST_COMPILER_VERSION": "16",
     "CCCL_BUILD_INFIX": "cuda13.4-gcc16",
     "CCCL_CUDA_EXTENDED": "false",
-    "HOST_WORKSPACE": "${localWorkspaceFolder}"
+    "HOST_WORKSPACE": "${localWorkspaceFolder}",
+    "CCCL_CUDA_LATEST": "true"
   },
   "workspaceFolder": "/home/coder/cccl",
   "workspaceMount": "source=${localWorkspaceFolder},target=/home/coder/cccl,type=bind",
